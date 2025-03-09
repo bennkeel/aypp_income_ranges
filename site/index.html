@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+  <title>Income and Rent Range Plot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f8f8;
+      font-size: 20px; /* Base font size doubled */
+    }
+    
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .title-container {
+      width: 30%;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+    
+    .chart-container {
+      width: 70%;
+    }
+    
+    #title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    #subtitle {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+    
+    /* Legends */
+    .legend-section {
+      margin-bottom: 30px;
+    }
+    
+    .legend-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .color-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 1px solid #333;
+    }
+    
+    .shape-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .legend-text {
+      font-size: 18px;
+    }
+    
+    #building-selector {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 10px;
+    }
+    
+    .building-button {
+      padding: 8px 16px;
+      background-color: #e0e0e0;
+      border: 1px solid #999;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    
+    .building-button:hover {
+      background-color: #d0d0d0;
+    }
+    
+    .building-button.active {
+      background-color: #663399;
+      color: white;
+    }
+    
+    #chart {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .tooltip {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 12px; /* Reduced tooltip font size by 50% */
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 300px;
+      z-index: 100;
+    }
+    
+    .axis-label {
+      font-size: 28px; /* Doubled axis label font size */
+      font-weight: bold;
+    }
+    
+    .tick text {
+      font-size: 20px; /* Doubled tick font size */
+    }
+    
+    svg {
+      background-color: #f8f8f8;
+      width: 100%;
+      height: auto;
+    }
+    
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .title-container,
+      .chart-container {
+        width: 100%;
+      }
+      
+      body {
+        margin: 10px;
+        font-size: 24px; /* Even larger base font size on mobile */
+      }
+      
+      #title {
+        font-size: 28px;
+      }
+      
+      #subtitle {
+        font-size: 18px;
+      }
+      
+      .legend-title {
+        font-size: 20px;
+      }
+      
+      .legend-text {
+        font-size: 16px;
+      }
+      
+      .tooltip {
+        font-size: 14px; /* Reduced tooltip size for mobile too (50% of original 28px) */
+        padding: 14px;
+      }
+      
+      .axis-label {
+        font-size: 32px; /* Larger axis label on mobile */
+      }
+      
+      .tick text {
+        font-size: 24px; /* Larger tick text on mobile */
+      }
+      
+      /* Add more margin at the bottom for rotated labels */
+      #chart svg {
+        margin-bottom: 30px;
+      }
+      
+      /* Ensure buttons stay in a single row on mobile */
+      .building-button {
+        font-size: 16px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title-container">
+      <div id="title">B2: Housing Income Ranges</div>
+      <div id="subtitle">Qualifying Household Income Range For All Affordable Units, 2016.6</div>
+      
+      <!-- Income Range Legend -->
+      <div class="legend-section">
+        <div class="legend-title">Income Ranges</div>
+        <div id="income-legend">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+      
+      <!-- Unit Type Legend -->
+      <div class="legend-section">
+        <div class="legend-title">Unit Types</div>
+        <div id="unit-legend">
+          <div class="legend-item">
+            <div class="shape-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" fill="#999" stroke="#000" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="legend-text">Studio</div>
+          </div>
+          <div class="legend-item">
+            <div class="shape-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" fill="#999" stroke="#000" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="legend-text">1-Bed</div>
+          </div>
+          <div class="legend-item">
+            <div class="shape-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <polygon points="12,4 22,20 2,20" fill="#999" stroke="#000" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="legend-text">2-Bed</div>
+          </div>
+          <div class="legend-item">
+            <div class="shape-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <polygon points="12,4 20,12 12,20 4,12" fill="#999" stroke="#000" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="legend-text">3-Bed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div id="building-selector">
+        <button class="building-button active" data-building="B2" data-year="2016">B2</button>
+        <button class="building-button" data-building="B3" data-year="2017">B3</button>
+        <button class="building-button" data-building="B14" data-year="2017">B14</button>
+        <button class="building-button" data-building="B15" data-year="2020">B15</button>
+        <button class="building-button" data-building="B12-B13" data-year="2021">B12-B13</button>
+        <button class="building-button" data-building="B4" data-year="2022">B4</button>
+      </div>
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

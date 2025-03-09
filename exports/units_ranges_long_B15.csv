@@ -1,0 +1,7 @@
+building,year,rent,Income Band,unit,count,band_num,Unit Type,Income Band & Unit Type,count_string,Variable,Annual Household Income,limit_category
+B15,2022.25,$1547,Middle Income: 100-140% AMI,studio,24,4,Studio,Band 4 Studio,24,income_low,53040,Lower Limit
+B15,2022.25,$1547,Middle Income: 100-140% AMI,studio,24,4,Studio,Band 4 Studio,24,income_high,146900,Upper Limit
+B15,2022.25,$2273,Middle Income: 100-140% AMI,1bed,48,4,1-Bed,Band 4 1-Bed,48,income_low,77932,Lower Limit
+B15,2022.25,$2273,Middle Income: 100-140% AMI,1bed,48,4,1-Bed,Band 4 1-Bed,48,income_high,165230,Upper Limit
+B15,2022.25,$3219,Middle Income: 100-140% AMI,2bed,22,4,2-Bed,Band 4 2-Bed,22,income_low,110366,Lower Limit
+B15,2022.25,$3219,Middle Income: 100-140% AMI,2bed,22,4,2-Bed,Band 4 2-Bed,22,income_high,198250,Upper Limit
