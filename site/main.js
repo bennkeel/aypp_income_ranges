@@ -160,7 +160,7 @@ function drawGraph(data) {
     d3.select("#chart").html("");
 
     // Get the current width of the container
-    const containerWidth = document.getElementById("chart").clientWidth;
+    const containerWidth = document.getElementById("container").clientWidth;
 
     // Set chart dimensions based on container width
     const aspectRatio = 0.6; // height to width ratio
@@ -201,10 +201,10 @@ function drawGraph(data) {
         .domain([1, 2, 3, 4, 5])
         .range(['#663399', '#9370DB', '#CD5C5C', '#FF8C69', '#FFD700']);
 
-    // Create size scale based on count
+    // Create size scale based on count - SMALLER for mobile
     const sizeScale = d3.scaleSqrt()  // Using square root scale for better visual representation
         .domain([1, 30])  // Domain from min to max count
-        .range([3, 12]);  // Range of sizes in pixels
+        .range(isMobile ? [2, 8] : [3, 12]);  // Range of sizes in pixels - smaller for mobile
 
     // Add X axis
     const xAxis = svg.append("g")
@@ -264,6 +264,8 @@ function drawGraph(data) {
         .attr("stroke", gridColor)
         .attr("stroke-width", 0.5);
 
+    processedData.sort((a, b) => b.bandNum - a.bandNum);
+
     // Create a group for each data point to hold the line and endpoints
     const lineGroups = svg.selectAll(".line-group")
         .data(processedData)
@@ -272,7 +274,7 @@ function drawGraph(data) {
         .attr("class", "line-group")
         .attr("data-key", d => d.key);
 
-    // Add horizontal lines (connecting the income ranges)
+    // Add horizontal lines (connecting the income ranges) - THINNER for mobile
     lineGroups.append("line")
         .attr("class", "income-line")
         .attr("x1", d => xScale(d.lowerIncome))
@@ -280,17 +282,17 @@ function drawGraph(data) {
         .attr("y1", d => yScale(d.rent))
         .attr("y2", d => yScale(d.rent))
         .attr("stroke", d => colorScale(d.bandNum))
-        .attr("stroke-width", isMobile ? 4 : 3);
+        .attr("stroke-width", isMobile ? 1.5 : 3);
 
-    // Add vertical line at the starting point
+    // Add vertical line at the starting point - THINNER for mobile
     lineGroups.append("line")
         .attr("class", "start-marker")
         .attr("x1", d => xScale(d.lowerIncome))
         .attr("x2", d => xScale(d.lowerIncome))
-        .attr("y1", d => yScale(d.rent) - 5) // 10px tall, centered
-        .attr("y2", d => yScale(d.rent) + 5)
+        .attr("y1", d => yScale(d.rent) - (isMobile ? 3 : 5)) // Smaller height for mobile
+        .attr("y2", d => yScale(d.rent) + (isMobile ? 3 : 5))
         .attr("stroke", d => colorScale(d.bandNum))
-        .attr("stroke-width", isMobile ? 4 : 3);
+        .attr("stroke-width", isMobile ? 1.5 : 3);
 
     // Function to draw shapes that scale based on count
     function addShape(selection, unitType, d) {
@@ -304,11 +306,11 @@ function drawGraph(data) {
               .attr("r", size)
               .attr("fill", colorScale(d.bandNum))
               .attr("stroke", "black")
-              .attr("stroke-width", isMobile ? 2 : 1.5)
+              .attr("stroke-width", isMobile ? 1 : 1.5)
               .attr("data-key", d.key);
         } else if (unitType === '1-Bed') {
           // Square for 1-Bedroom
-          const rectSize = size * 1.5;
+          const rectSize = 1.75 * size;
           selection
               .append("rect")
               .attr("class", "shape")
@@ -318,29 +320,29 @@ function drawGraph(data) {
               .attr("height", rectSize)
               .attr("fill", colorScale(d.bandNum))
               .attr("stroke", "black")
-              .attr("stroke-width", isMobile ? 2 : 1.5)
+              .attr("stroke-width", isMobile ? 1 : 1.5)
               .attr("data-key", d.key);
         } else if (unitType === '2-Bed') {
           // Triangle for 2-Bedroom
-          const triangleSize = size * 1.8;
+          const triangleSize = 1.1 * size;
           selection
               .append("polygon")
               .attr("class", "shape")
               .attr("points", `0,${-triangleSize} ${triangleSize*0.866},${triangleSize/2} ${-triangleSize*0.866},${triangleSize/2}`)
               .attr("fill", colorScale(d.bandNum))
               .attr("stroke", "black")
-              .attr("stroke-width", isMobile ? 2 : 1.5)
+              .attr("stroke-width", isMobile ? 1 : 1.5)
               .attr("data-key", d.key);
         } else if (unitType === '3-Bed') {
           // Diamond for 3-Bedroom
-          const diamondSize = size * 1.8;
+          const diamondSize = size;
           selection
               .append("polygon")
               .attr("class", "shape")
               .attr("points", `0,${-diamondSize} ${diamondSize},0 0,${diamondSize} ${-diamondSize},0`)
               .attr("fill", colorScale(d.bandNum))
               .attr("stroke", "black")
-              .attr("stroke-width", isMobile ? 2 : 1.5)
+              .attr("stroke-width", isMobile ? 1 : 1.5)
               .attr("data-key", d.key);
         }
     }
@@ -361,7 +363,7 @@ function drawGraph(data) {
             
             // Position tooltip to the left if on right side, right if on left side
             const tooltipX = isRightSide ? 
-                mouseX - 320 : // Left side of mouse (with offset)
+                mouseX - (isMobile ? 220 : 360) : // Left side of mouse (with offset) - smaller for mobile
                 mouseX + 20;   // Right side of mouse (with offset)
                 
             tooltip
@@ -380,9 +382,9 @@ function drawGraph(data) {
             // Highlight the corresponding line
             const key = d.key;
             
-            // Increase the shape's stroke width
+            // Increase the shape's stroke width - but less on mobile
             d3.select(this).select(".shape")
-                .attr("stroke-width", isMobile ? 4 : 3);
+                .attr("stroke-width", isMobile ? 2 : 3);
         })
         .on("mouseout", function(event, d) {
             // Remove tooltip
@@ -393,7 +395,7 @@ function drawGraph(data) {
             
             // Reset the shape's stroke width
             d3.select(this).select(".shape")
-                .attr("stroke-width", isMobile ? 2 : 1.5);
+                .attr("stroke-width", isMobile ? 1 : 1.5);
         });
 
     // Apply appropriate shape for each data point

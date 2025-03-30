@@ -19,13 +19,14 @@
       flex-wrap: wrap;
       flex-direction: column;
       max-width: 720px; /* Set max width to 720px */
+      max-height: 540px;
       margin: 0 auto;
     }
 
     .title-container {
       width: 100%; /* Full width for title area */
       box-sizing: border-box;
-      margin-bottom: 10px;
+      /* margin-bottom: 10px; */
     }
 
     .chart-container {
@@ -71,6 +72,10 @@
       align-items: center;
       margin-bottom: 4px;
     }
+
+    .legend-container {
+        margin-bottom: 5px;
+      }
 
     .color-circle {
       width: 12px;
@@ -133,7 +138,7 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       padding: 8px;
-      font-size: 10px;
+      font-size: 14px;
       pointer-events: none;
       opacity: 0;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -147,7 +152,7 @@
     }
 
     .tick text {
-      font-size: 10px;
+      font-size: 12px;
     }
     
     /* Mobile styles */
@@ -159,12 +164,16 @@
       .title-container,
       .chart-container {
         width: 100%;
-        min-width: 320px;
+        min-width: 250px;
       }
       
+      .chart-container {
+        height:360px;
+      }
+
       body {
         margin: 10px;
-        font-size: 14px; /* Even larger base font size on mobile */
+        font-size: 14px;
       }
       
       #title {
@@ -191,7 +200,7 @@
       }
 
       .legend-container {
-        width:48%
+        width:48%;
       }
 
       .legend-title {
@@ -203,16 +212,17 @@
       }
       
       .tooltip {
-        font-size: 14px; /* Reduced tooltip size for mobile too (50% of original 28px) */
-        padding: 14px;
+        font-size: 12px; /* Smaller font size for tooltip on mobile */
+        padding: 6px;
+        max-width: 200px;
       }
       
       .axis-label {
-        font-size: 12px; /* Larger axis label on mobile */
+        font-size: 10px; /* Smaller axis label on mobile */
       }
       
       .tick text {
-        font-size: 10px; /* Larger tick text on mobile */
+        font-size: 8px; /* Smaller tick text on mobile */
       }
       
       /* Add more margin at the bottom for rotated labels */
@@ -237,7 +247,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <div class="title-container">
       <div id="title">B2: Housing Income Ranges</div>
       <div id="subtitle">Qualifying Household Income Range For All Affordable Units, 2016.6</div>
