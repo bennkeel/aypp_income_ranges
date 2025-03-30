@@ -168,8 +168,8 @@ function drawGraph(data) {
 
     // Set margins based on screen size
     const margin = isMobile ? 
-        { top: 40, right: 40, bottom: 120, left: 120 } : 
-        { top: 40, right: 50, bottom: 100, left: 110 };
+        { top: 10, right: 20, bottom: 50, left: 60 } : 
+        { top: 10, right: 20, bottom: 50, left: 60 };
         
     const width = containerWidth - margin.left - margin.right;
     const height = Math.min(containerWidth * aspectRatio, 600) - margin.top - margin.bottom;
@@ -238,7 +238,7 @@ function drawGraph(data) {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -margin.left + (isMobile ? 30 : 20))
+        .attr("y", -margin.left + (isMobile ? 15 : 15))
         .text("Rent");
 
     // Add gridlines with slightly darker gray
