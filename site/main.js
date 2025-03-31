@@ -168,8 +168,8 @@ function drawGraph(data) {
 
     // Set margins based on screen size
     const margin = isMobile ? 
-        { top: 10, right: 20, bottom: 50, left: 60 } : 
-        { top: 10, right: 20, bottom: 50, left: 60 };
+        { top: 10, right: 20, bottom: 55, left: 65 } : 
+        { top: 10, right: 20, bottom: 70, left: 80 };
         
     const width = containerWidth - margin.left - margin.right;
     const height = Math.min(containerWidth * aspectRatio, 600) - margin.top - margin.bottom;
@@ -189,7 +189,7 @@ function drawGraph(data) {
 
     // Set up scales
     const xScale = d3.scaleLinear()
-        .domain([20000, 200000])
+        .domain([0, 200000])
         .range([0, width]);
 
     const yScale = d3.scaleLinear()
@@ -363,7 +363,7 @@ function drawGraph(data) {
             
             // Position tooltip to the left if on right side, right if on left side
             const tooltipX = isRightSide ? 
-                mouseX - (isMobile ? 220 : 360) : // Left side of mouse (with offset) - smaller for mobile
+                mouseX - (isMobile ? 220 : 300) : // Left side of mouse (with offset) - smaller for mobile
                 mouseX + 20;   // Right side of mouse (with offset)
                 
             tooltip
