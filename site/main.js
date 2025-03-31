@@ -177,6 +177,7 @@ function drawGraph(data) {
     // Create SVG with viewBox for responsiveness
     const svg = d3.select("#chart")
         .append("svg")
+        // .attr("id", 'chartGraphic')
         .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
         .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
@@ -204,7 +205,7 @@ function drawGraph(data) {
     // Create size scale based on count - SMALLER for mobile
     const sizeScale = d3.scaleSqrt()  // Using square root scale for better visual representation
         .domain([1, 30])  // Domain from min to max count
-        .range(isMobile ? [2, 8] : [3, 12]);  // Range of sizes in pixels - smaller for mobile
+        .range(isMobile ? [3, 9] : [3, 12]);  // Range of sizes in pixels - smaller for mobile
 
     // Add X axis
     const xAxis = svg.append("g")
@@ -214,8 +215,8 @@ function drawGraph(data) {
         .ticks(isMobile ? 5 : 10))
         .selectAll("text")
         .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
+        .attr("dx", "-12px")
+        .attr("dy", "3px")
         .attr("transform", "rotate(-45)");
 
     // Add Y axis
@@ -363,7 +364,7 @@ function drawGraph(data) {
             
             // Position tooltip to the left if on right side, right if on left side
             const tooltipX = isRightSide ? 
-                mouseX - (isMobile ? 220 : 300) : // Left side of mouse (with offset) - smaller for mobile
+                mouseX - (isMobile ? 180 : 300) : // Left side of mouse (with offset) - smaller for mobile
                 mouseX + 20;   // Right side of mouse (with offset)
                 
             tooltip
